@@ -3,6 +3,7 @@ const usermodel = require("../models/usermodel");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 
+
 hashpasswordgenerator = async (pwd) => {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(pwd, salt);
