@@ -3,10 +3,14 @@ const mongoose=require("mongoose")
 const userschema=new mongoose.Schema
 (
     {
-        uname:String,
+        name:String,
         email:String,
-        password:String
+        password:String,
+        confirmPassword:String
     }
 )
+
+
+
 
 module.exports=mongoose.model("user",userschema)
