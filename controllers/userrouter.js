@@ -86,7 +86,51 @@ router.get("/viewusers", async (req, res) => {
     res.json(result);
 });
 
+router.get("/viewuser",async(req,res)=>{
+    let result=await usermodel.find()
+    .populate("_id","name email")
+    .exec()  //first it will find,then populate the fields
+    res.json(result)
 
+});
+
+
+router.post("/changeusername", async (req, res) => {
+    try {
+        const { email, name: newUsername } = req.body;
+
+        // Find the user by email
+        const user = await usermodel.findOne({ email: email });
+        if (!user) {
+            return res.json({
+                status: "error",
+                message: "User not found",
+            });
+        }
+
+        // Update the username
+        user.name = newUsername;
+
+        // Save the updated user
+        await user.save();
+
+        res.json({
+            status: "success",
+            message: "Username updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+            },
+        });
+    } catch (error) {
+        console.error("Error changing username:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+        });
+    }
+});
 
 
 
