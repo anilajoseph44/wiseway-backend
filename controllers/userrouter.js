@@ -133,5 +133,57 @@ router.post("/changeusername", async (req, res) => {
 });
 
 
+router.post("/changepassword", async (req, res) => {
+    try {
+        const { email, oldpassword, newpassword } = req.body;
+
+        // Find the user by email
+        const user = await usermodel.findOne({ email: email });
+        if (!user) {
+            return res.json({
+                status: "error",
+                message: "User not found",
+            });
+        }
+
+        // Verify old password
+        const match = await bcrypt.compare(oldpassword, user.password);
+        if (!match) {
+            return res.json({
+                status: "error",
+                message: "Incorrect old password",
+            });
+        }
+
+        // Hash the new password
+        const hashedNewPassword = await hashpasswordgenerator(newpassword);
+
+        // Update the password
+        user.password = hashedNewPassword;
+
+        // Save the updated user
+        await user.save();
+
+        res.json({
+            status: "success",
+            message: "Password updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+            },
+        });
+    } catch (error) {
+        console.error("Error changing password:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+        });
+    }
+});
+
+
+
+
 
 module.exports = router;
